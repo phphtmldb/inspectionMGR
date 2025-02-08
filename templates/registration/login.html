@@ -1,0 +1,14 @@
+{% include "includes/header.html" %}
+
+<div class="container mt-5">
+    <h2 class="text-center">로그인</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">로그인</button>
+    </form>
+    <p class="mt-3"><a href="{% url 'password_reset' %}">비밀번호 찾기</a></p>
+    <p>아직 회원이 아니신가요? <a href="{% url 'signup' %}">회원가입</a></p>
+</div>
+
+{% include "includes/footer.html" %}
