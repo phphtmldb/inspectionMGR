@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import SignupView
+from punchMGR import views  # views 모듈 전체를 임포트
 
 urlpatterns = [
-    path('signup/', SignupView.as_view(), name='signup'),
+    path('verify/<str:token>/', views.verify_email, name='verify_email'),
 ]

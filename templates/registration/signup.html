@@ -1,12 +1,46 @@
 {% include "includes/header.html" %}
 
-<div class="container mt-5">
-    <h2 class="text-center">회원가입</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">회원가입</button>
-    </form>
-</div>
+<h2>회원가입</h2>
+<p>아래 정보를 입력하여 회원가입을 진행하세요.</p>
+
+{% if messages %}
+    <div class="alert alert-info">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label for="email" class="form-label">이메일:</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+            <div class="text-danger">{{ form.email.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label for="password1" class="form-label">비밀번호:</label>
+        {{ form.password1 }}
+        {% if form.password1.errors %}
+            <div class="text-danger">{{ form.password1.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label for="password2" class="form-label">비밀번호 확인:</label>
+        {{ form.password2 }}
+        {% if form.password2.errors %}
+            <div class="text-danger">{{ form.password2.errors }}</div>
+        {% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">회원가입</button>
+</form>
+
+<p>이미 계정이 있으신가요? <a href="{% url 'login' %}">로그인</a></p>
 
 {% include "includes/footer.html" %}
