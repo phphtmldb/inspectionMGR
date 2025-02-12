@@ -8,7 +8,7 @@ urlpatterns = [
     path('django_admin/', admin.site.urls),  
     
     # 메인
-    path('', TemplateView.as_view(template_name='main.html'), name='home'),
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
     
     # 계정/인증 관련
     path('accounts/', include('django.contrib.auth.urls')),  # 로그인, 로그아웃, 비밀번호 변경 기능

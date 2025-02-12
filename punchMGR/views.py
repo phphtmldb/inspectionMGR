@@ -23,24 +23,34 @@ def register(request):
             user.save()
 
             # 이메일 인증 링크 생성
-            verification_link = request.build_absolute_uri(f'/verify/{token}/')
+            verification_link = request.build_absolute_uri(f'/accounts/verify/{token}/')
 
             # 이메일 전송
             send_mail(
                 '이메일 인증',
                 f'아래 링크를 클릭하여 이메일을 인증하세요: {verification_link}',
-                settings.EMAIL_HOST_USER,  # 설정에서 이메일 가져오기
+                settings.EMAIL_HOST_USER,
                 [user.email],
                 fail_silently=False,
             )
 
-            messages.info(request, "회원가입이 완료되었습니다. 이메일을 확인하여 인증을 완료하세요.")
-            return redirect('email_verification_sent')  # 인증 이메일 발송 완료 페이지로 이동
+            # 메시지 프레임워크를 이용한 알림
+            messages.success(request, "회원가입이 완료되었습니다. 이메일을 확인하여 인증을 완료하세요.")
 
+            # 홈페이지로 이동 (urls.py에서 name='home'으로 설정한 URL로 이동한다고 가정)
+            return redirect('home')
     else:
         form = CustomUserCreationForm()
 
     return render(request, 'registration/signup.html', {'form': form})
+
+
+def email_verification_sent(request):
+    """
+    기존에 있던 뷰.
+    더 이상 사용하지 않는다면 삭제해도 무방합니다.
+    """
+    return render(request, 'email_verification_sent.html')
 
 
 def verify_email(request, token):
@@ -54,4 +64,8 @@ def verify_email(request, token):
     
     # 이메일 인증 완료 후 메시지 표시 및 로그인 페이지로 이동
     messages.success(request, "이메일 인증이 완료되었습니다. 로그인해 주세요.")
-    return redirect('login')  # 로그인 페이지로 이동
+    return redirect('login')
+
+
+def home(request):
+    return render(request, 'home.html')
