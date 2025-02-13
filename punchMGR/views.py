@@ -17,6 +17,9 @@ def register(request):
             user = form.save(commit=False)
             user.is_active = False  # 이메일 인증 전까지 계정 비활성화
 
+            # 가입 시점에 username을 email과 동일하게 설정
+            user.username = user.email
+            
             # 이메일 인증을 위한 토큰 생성 및 저장
             token = get_random_string(length=32)
             user.email_token = token
@@ -43,14 +46,6 @@ def register(request):
         form = CustomUserCreationForm()
 
     return render(request, 'registration/signup.html', {'form': form})
-
-
-def email_verification_sent(request):
-    """
-    기존에 있던 뷰.
-    더 이상 사용하지 않는다면 삭제해도 무방합니다.
-    """
-    return render(request, 'email_verification_sent.html')
 
 
 def verify_email(request, token):

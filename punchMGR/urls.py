@@ -3,5 +3,4 @@ from punchMGR import views  # views 모듈 전체를 임포트
 
 urlpatterns = [
     path('verify/<str:token>/', views.verify_email, name='verify_email'),
-    path('email_verification_sent/', views.email_verification_sent, name='email_verification_sent'),
 ]
