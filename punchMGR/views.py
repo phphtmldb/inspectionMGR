@@ -4,6 +4,8 @@ from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from django.conf import settings
 from django.contrib import messages
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from .forms import CustomUserCreationForm
 from .models import CustomUser
 
@@ -28,12 +30,18 @@ def register(request):
             # 이메일 인증 링크 생성
             verification_link = request.build_absolute_uri(f'/accounts/verify/{token}/')
 
+            # HTML 이메일 템플릿 사용
+            subject = '이메일 인증 요청'
+            html_message = render_to_string('email/verify_email.html', {'verification_link': verification_link})
+            plain_message = strip_tags(html_message)  # HTML 태그 제거 후 텍스트 버전 생성
+
             # 이메일 전송
             send_mail(
-                '이메일 인증',
-                f'아래 링크를 클릭하여 이메일을 인증하세요: {verification_link}',
+                subject,
+                plain_message,  # 텍스트 버전
                 settings.EMAIL_HOST_USER,
                 [user.email],
+                html_message=html_message,  # HTML 버전
                 fail_silently=False,
             )
 
