@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django_recaptcha.fields import ReCaptchaField
 from .models import CustomUser
 
 class CustomUserCreationForm(UserCreationForm):
@@ -22,6 +23,8 @@ class CustomUserCreationForm(UserCreationForm):
         strip=False,
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': '비밀번호 확인'}),
     )
+
+    captcha = ReCaptchaField()  # CAPTCHA 필드 추가
 
     class Meta:
         model = CustomUser

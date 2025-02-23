@@ -34,6 +34,7 @@ def register(request):
             subject = '이메일 인증 요청'
             html_message = render_to_string('email/verify_email.html', {'verification_link': verification_link})
             plain_message = strip_tags(html_message)  # HTML 태그 제거 후 텍스트 버전 생성
+            
             try:
             # 이메일 전송
                 send_mail(
