@@ -34,25 +34,26 @@ def register(request):
             subject = '이메일 인증 요청'
             html_message = render_to_string('email/verify_email.html', {'verification_link': verification_link})
             plain_message = strip_tags(html_message)  # HTML 태그 제거 후 텍스트 버전 생성
-
+            try:
             # 이메일 전송
-            send_mail(
-                subject,
-                plain_message,  # 텍스트 버전
-                settings.EMAIL_HOST_USER,
-                [user.email],
-                html_message=html_message,  # HTML 버전
-                fail_silently=False,
-            )
+                send_mail(
+                    subject,
+                    plain_message,  # 텍스트 버전
+                    settings.EMAIL_HOST_USER,
+                    [user.email],
+                    html_message=html_message,  # HTML 버전
+                    fail_silently=False,
+                )
+            except Exception as e:
+                # 이메일 전송 실패
+                messages.error(request, "이메일 전송에 실패했습니다. 다시 시도해 주세요.")
+                return redirect('register')
 
             # 메시지 프레임워크를 이용한 알림
             messages.success(request, "회원가입이 완료되었습니다. 이메일을 확인하여 인증을 완료하세요.")
-
-            # 홈페이지로 이동 (urls.py에서 name='home'으로 설정한 URL로 이동한다고 가정)
             return redirect('home')
     else:
         form = CustomUserCreationForm()
-
     return render(request, 'registration/signup.html', {'form': form})
 
 
@@ -60,14 +61,22 @@ def verify_email(request, token):
     """
     이메일 인증 처리
     """
-    user = get_object_or_404(CustomUser, email_token=token)
-    user.is_active = True  # 이메일 인증 완료 후 활성화
-    user.email_token = ""  # 🔹 인증 후 토큰 삭제 (보안 강화)
-    user.save()
-    
-    # 이메일 인증 완료 후 메시지 표시 및 로그인 페이지로 이동
-    messages.success(request, "이메일 인증이 완료되었습니다. 로그인해 주세요.")
-    return redirect('login')
+    try:
+        user = CustomUser.objects.get(email_token=token)
+        if user.is_active:
+            # 이미 인증된 사용자인 경우
+            messages.info(request, "이미 인증된 이메일입니다. 로그인 해주세요.")
+        else:
+            # 아직 인증되지 않은 사용자인 경우
+            user.is_active = True
+            user.email_token = None # 인증 후 토큰 삭제 (보안강화)
+            user.save()
+            messages.success(request, "이메일 인증이 완료되었습니다. 로그인해 주세요.")
+        return redirect('login')
+    except CustomUser.DoesNotExist:
+        # 인증 토큰이 존재하지 않는 경우
+        messages.error(request, "유효하지 않은 인증 링크입니다.")
+        return redirect('home')
 
 
 def home(request):

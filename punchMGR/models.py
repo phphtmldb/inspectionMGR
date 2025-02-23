@@ -48,7 +48,7 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
-class CustomUser(BaseModel, AbstractBaseUser, PermissionsMixin):  # ✅ BaseModel을 상속받도록 변경
+class CustomUser(BaseModel, AbstractBaseUser, PermissionsMixin):  # BaseModel을 상속받도록 변경
     email = models.EmailField(unique=True)
     email_token = models.CharField(max_length=32, blank=True, null=True, unique=True)  # 중복 방지를 위해 unique=True 추가
     is_active = models.BooleanField(default=False)  # 기본적으로 비활성화 상태
@@ -73,7 +73,7 @@ class CustomUser(BaseModel, AbstractBaseUser, PermissionsMixin):  # ✅ BaseMode
     REQUIRED_FIELDS = []
 
     class Meta:
-        db_table = DB_TABLE_PREFIX + "customuser"  # ✅ 클래스 내부에서 직접 get_table_name() 호출 불가, 수동 지정
+        db_table = DB_TABLE_PREFIX + "customuser"  # 클래스 내부에서 직접 get_table_name() 호출 불가, 수동 지정
 
     def __str__(self):
         return self.email
